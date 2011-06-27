@@ -106,6 +106,27 @@ sub prov
 	# We have to telnet to the gw to telnet to the (probably) linksys switch as it lacks a default route per now.
 	# Some copy and pasting from the $ios-part above here... Could probably made a function of it but what the heck.
 
+	print "10..\n";
+	sleep (1);
+	print "9..\n";
+	sleep (1);
+	print "8..\n";
+	sleep (1);
+	print "7..\n";
+	sleep (1);
+	print "6..\n";
+	sleep (1);
+	print "5..\n";
+	sleep (1);
+	print "4..\n";
+	sleep (1);
+	print "3..\n";
+	sleep (1);
+	print "2..\n";
+	sleep (1);
+	print "1..\n";
+	sleep (1);
+
 	my $new = Net::Telnet::Cisco->new (
 		Host => $switch{core},
 		Errmode => 'return',
@@ -134,29 +155,46 @@ sub prov
 
 	# cmd() waits for return... seems print() is a better option.
 	#$new->cmd ("telnet $switch{defip} /source-interface $switch{interface}");
-	$new->print ("telnet $switch{defip} /source-interface $switch{interface}");
+	$new->print ("telnet $switch{defip}");
 
 
 	# Okay... now we got a connection to the switch...
 	# The linksys telnet interface is a menu(!), but we can exit that after logging in.
 
-	$new->print ("$switch{defuser}\n");
+	print "Waiting for user prompt\n";
+	$new->waitfor ('/User Name:/');
+
+	print "Entering username\n";
+	$new->print ("$switch{defuser}\n\n");
 
 	# Default for new linksys firmware is to login after admin\n
 	#$new->print ("$switch{defpass}\n");
 
-	$new->print ("^Z");
+#	$new->print ("\x1A");
 
-	$new->waitfor ("/\>/");
-	print "Got to the cli... Now start 'lcli'!\n";
+#	print "Waiting for basic cli...\n";
+#	$new->waitfor ("/\>/");
+#	print "Got to the cli... Now start 'lcli'!\n";
+#	$new->print ("lcli\n");
+#	print "Waiting for username-prompt...\n";
+#	$new->waitfor ("/Password\:/");
+#	print "Enter username $switch{defuser}\n";
+#	$new->print ("admin\n");
 
 
-	$new->print ("lcli\n");
+#	print "Waiting for switch prompt\n";
+#	$new->waitfor('/#/');
+#	print "Got switch prompt...\n";
+	# Some quick debuging...
+#	$new->print ("conf\n");
+#	$new->print ("interface ethernet g20\n");
+##	$new->print ("shutdown\n");
+#	$new->print ("no shutdown\n");
+#	$new->print ("end\n");
 
-
-
+	$new->errmsg;
+	$new->close ();
 	
-
 }
 
 
