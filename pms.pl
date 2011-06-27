@@ -55,8 +55,8 @@ sub prov
 	my $ios = Net::Telnet::Cisco->new (
 		Host => $switch{core},
 		Errmode => 'return',
-		output_log => "output-core$switch{core}.log", 
-		input_log => "input-core$switch{core}.log", 
+		output_log => "out-core$switch{core}.log", 
+		input_log => "in-core$switch{core}.log", 
 		Prompt => '/\S+[#>]/',
 		);
 	
@@ -92,6 +92,49 @@ sub prov
 
 	# Smart to check somewhere on the way...
 	print $ios->errmsg;
+
+
+	# Closing the connection for now.
+	$ios->close;
+
+
+	# Here starts the interesting part... Thanks to the TG Tech:Server-crew for doing this before me.
+	# We have to telnet to the gw to telnet to the (probably) linksys switch as it lacks a default route per now.
+	# Some copy and pasting from the $ios-part above here... Could probably made a function of it but what the heck.
+
+	my $new = Net::Telnet::Cisco->new (
+		Host => $switch{core},
+		Errmode => 'return',
+		output_log => "out-core$switch{core}.log", 
+		input_log => "in-core$switch{core}.log", 
+		Prompt => '/\S+[#>]/',
+		);
+	
+	if (!defined ($new))
+	{
+		print "Could not connect to core $switch{core}\n";
+		return 0;
+	}
+
+	print "Connected to core $switch{core}... Logging in.\n";
+	
+	$new->login ($switch{iosuser}, $switch{iospass}) or die ("Login failed on core $switch{core}");
+
+	$new->enable;
+
+	# Smart to check somewhere on the way...
+	print $new->errmsg;
+
+	print "Telnet'ing to switch $switch{defip}...\n";
+
+
+	# cmd() waits for return... seems print() is a better option.
+	#$new->cmd ("telnet $switch{defip} /source-interface $switch{interface}");
+	$new->print ("telnet $switch{defip} /source-interface $switch{interface}");
+
+
+	
+
 }
 
 
