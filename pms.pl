@@ -11,6 +11,8 @@ use Net::Ping;
 my $defip = '192.168.1.254';
 my $defmask = '255.255.255.0';
 my $defgw = '192.168.1.1';
+my $defuser = 'admin';
+my $defpass = '';
 
 # Party settings
 my $tftpserver = '10.20.4.11';
@@ -29,6 +31,8 @@ my %switch = (
 	tftpserver => $tftpserver,
 	iosuser => $iosuser,
 	iospass => $iospass,
+	defuser => $defuser,
+	defpass => $defpass,
 	);
 
 
@@ -131,6 +135,24 @@ sub prov
 	# cmd() waits for return... seems print() is a better option.
 	#$new->cmd ("telnet $switch{defip} /source-interface $switch{interface}");
 	$new->print ("telnet $switch{defip} /source-interface $switch{interface}");
+
+
+	# Okay... now we got a connection to the switch...
+	# The linksys telnet interface is a menu(!), but we can exit that after logging in.
+
+	$new->print ("$switch{defuser}\n");
+
+	# Default for new linksys firmware is to login after admin\n
+	#$new->print ("$switch{defpass}\n");
+
+	$new->print ("^Z");
+
+	$new->waitfor ("/\>/");
+	print "Got to the cli... Now start 'lcli'!\n";
+
+
+	$new->print ("lcli\n");
+
 
 
 	
