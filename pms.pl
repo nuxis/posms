@@ -187,14 +187,7 @@ sub prov
 	print "Got switch prompt...\n";
 
 
-
-
-# Some quick debuging...
-	$new->print ("conf\n");
-	$new->print ("interface ethernet g20\n");
-#	$new->print ("shutdown\n");
-	$new->print ("no shutdown\n");
-	$new->print ("end\n");
+	$new->print ("copy tftp://$switch{tftpserver}/base/$switch{name}.conf startup-config");
 
 	$new->errmsg;
 	$new->close ();
