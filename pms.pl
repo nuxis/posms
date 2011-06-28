@@ -188,26 +188,24 @@ sub prov
 
 
 	print "Setting default gateway..\n";
-	$new->print ("conf");
-	$new->print ("interface vlan 1");
-	$new->print ("ip address 192.168.1.254 255.255.255.0");
-	$new->print ("ip default-gateway 192.168.1.1");
-	$new->print ("exit");
+	$new->cmd ("conf");
+	$new->cmd ("interface vlan 1");
+	$new->cmd ("ip address 192.168.1.254 255.255.255.0");
+	$new->cmd ("ip default-gateway 192.168.1.1");
+	$new->cmd ("exit");
 	$new->print ("exit");
 
-#	print "Copying config for $switch{name} from $switch{tftpserver}...\n";
-#	$new->print ("copy tftp://$switch{tftpserver}/base/$switch{name}.conf startup-config");
+	print "Copying config for $switch{name} from $switch{tftpserver}...\n";
+	$new->cmd ("copy tftp://$switch{tftpserver}/base/$switch{name}.conf startup-config");
 
-#	print "Waiting for prompt...\n";
-#	$new->waitfor ("/\[hh\:mm\:ss\]/");
-	$new->waitfor ("/#/");
+	print $new->last_prompt;
+
+	$new->waitfor ('/hh:mm:ss/');
 
 	print "Reloading $switch{name}...\n";
-	$new->print ("reload");
-	print "Waiting for reload prompt..\n";
-	$new->waitfor ("/ N/");
+	$new->cmd ("reload");
 	print "Replying 'y'..\n";
-	$new->print ("y");
+	$new->print ("y\n");
 
 
 	$new->errmsg;
