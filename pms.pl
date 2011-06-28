@@ -145,12 +145,10 @@ sub prov
 
 
 	# cmd() waits for return... seems print() is a better option.
-	#$new->cmd ("telnet $switch{defip} /source-interface $switch{interface}");
 	$new->print ("telnet $switch{defip}");
 
 	# FIXME: this telnet-in-telnet needs some errorchecking... if it fails, we actually try to run the following commands on the core gw instead of on the stupid switch
 	#        the commands I've used doesn't do any harm, as they fail on "conf" instead of "conf t" but it's not pretty!  -- Mathias
-
 
 	# Okay... now we got a connection to the switch...
 	# The linksys telnet interface is a menu(!), but we can exit that after logging in.
@@ -194,10 +192,6 @@ sub prov
 
 	print "Copying config for $switch{name} from $switch{tftpserver}...\n";
 	$new->print ("copy tftp://$switch{tftpserver}/base/$switch{name}.conf startup-config\n\n");
-
-#	print $new->last_prompt;
-
-#	$new->waitfor ('/hh:mm:ss/');
 
 	tsleep (10);
 	$new->cmd ("\n");
