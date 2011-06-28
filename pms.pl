@@ -252,6 +252,7 @@ sub prov
 ## FIXME: more config here!
 
 	$ios->cmd ("end");
+	$ios->cmd ("wr");
 
 	# Smart to check somewhere on the way...
 	print $ios->errmsg;
