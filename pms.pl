@@ -161,36 +161,40 @@ sub prov
 	# Okay... now we got a connection to the switch...
 	# The linksys telnet interface is a menu(!), but we can exit that after logging in.
 
-	print "Waiting for user prompt\n";
-	$new->waitfor ('/User Name:/');
+	print "Waiting for login prompt\n";
+	$new->waitfor ('/Password:/');
 
 	print "Entering username\n";
-	$new->print ("$switch{defuser}\n\n");
+	$new->print ("$switch{defuser}");
 
 	# Default for new linksys firmware is to login after admin\n
 	#$new->print ("$switch{defpass}\n");
 
-#	$new->print ("\x1A");
+	$new->print ("\cZ");
 
-#	print "Waiting for basic cli...\n";
-#	$new->waitfor ("/\>/");
-#	print "Got to the cli... Now start 'lcli'!\n";
-#	$new->print ("lcli\n");
-#	print "Waiting for username-prompt...\n";
-#	$new->waitfor ("/Password\:/");
-#	print "Enter username $switch{defuser}\n";
-#	$new->print ("admin\n");
+	print "Waiting for basic cli...\n";
+	$new->waitfor ("/\>/");
+	print "Got to the cli... Now start 'lcli'!\n";
+	$new->print ("lcli\n");
+	print "Waiting for username-prompt...\n";
+	$new->waitfor ("/User Name\:/");
+	print "Enter username $switch{defuser}\n";
+	$new->print ("admin");
 
 
-#	print "Waiting for switch prompt\n";
-#	$new->waitfor('/#/');
-#	print "Got switch prompt...\n";
-	# Some quick debuging...
-#	$new->print ("conf\n");
-#	$new->print ("interface ethernet g20\n");
-##	$new->print ("shutdown\n");
-#	$new->print ("no shutdown\n");
-#	$new->print ("end\n");
+	print "Waiting for switch prompt\n";
+	$new->waitfor('/#/');
+	print "Got switch prompt...\n";
+
+
+
+
+# Some quick debuging...
+	$new->print ("conf\n");
+	$new->print ("interface ethernet g20\n");
+#	$new->print ("shutdown\n");
+	$new->print ("no shutdown\n");
+	$new->print ("end\n");
 
 	$new->errmsg;
 	$new->close ();
