@@ -109,26 +109,7 @@ sub prov
 	# We have to telnet to the gw to telnet to the (probably) linksys switch as it lacks a default route per now.
 	# Some copy and pasting from the $ios-part above here... Could probably made a function of it but what the heck.
 
-	print "10..\n";
-	sleep (1);
-	print "9..\n";
-	sleep (1);
-	print "8..\n";
-	sleep (1);
-	print "7..\n";
-	sleep (1);
-	print "6..\n";
-	sleep (1);
-	print "5..\n";
-	sleep (1);
-	print "4..\n";
-	sleep (1);
-	print "3..\n";
-	sleep (1);
-	print "2..\n";
-	sleep (1);
-	print "1..\n";
-	sleep (1);
+	tsleep (10);
 
 	my $new = Net::Telnet::Cisco->new (
 		Host => $switch{core},
@@ -205,26 +186,7 @@ sub prov
 
 #	$new->waitfor ('/hh:mm:ss/');
 
-	print "10..\n";
-	sleep (1);
-	print "9..\n";
-	sleep (1);
-	print "8..\n";
-	sleep (1);
-	print "7..\n";
-	sleep (1);
-	print "6..\n";
-	sleep (1);
-	print "5..\n";
-	sleep (1);
-	print "4..\n";
-	sleep (1);
-	print "3..\n";
-	sleep (1);
-	print "2..\n";
-	sleep (1);
-	print "1..\n";
-	sleep (1);
+	tsleep (10);
 	$new->cmd ("\n");
 	print "Reloading $switch{name}...\n";
 	$new->cmd ("reload");
@@ -298,6 +260,16 @@ sub prov
 
 }
 
+sub tsleep
+{
+	my ($time) = @_;
+	while ($time)
+	{
+		print "$time...\n";
+		sleep (1);
+		$time--;
+	}
+}
 
 
 prov (%switch);
