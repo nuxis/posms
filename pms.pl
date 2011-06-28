@@ -7,6 +7,9 @@ use Net::Telnet::Cisco;
 use Net::Ping;
 
 
+###### SETTINGS BELOW HERE ######
+
+
 # This is default settings for Linksys SRW2024
 my $defip = '192.168.1.254';
 my $defmask = '255.255.255.0';
@@ -38,6 +41,7 @@ my %switch = (
 	realmask => '255.255.255.0',
 	);
 
+###### SETTINGS ABOVE HERE ######
 
 
 sub prov
