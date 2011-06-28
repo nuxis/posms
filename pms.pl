@@ -15,15 +15,15 @@ my $defuser = 'admin';
 my $defpass = '';
 
 # Party settings
-my $tftpserver = '10.20.4.11';
-my $iosuser = 'pms';
-my $iospass = 'Polar11';
+my $tftpserver = '10.20.30.1';
+my $iosuser = 'iosuser';
+my $iospass = 'iospass';
 
 # This is per switch settings!
 my %switch = (
-	name => 'rad1',
+	name => 'sw1',
 	interface => 'gig 1/0/11',
-	core => '10.20.4.3',
+	core => '10.20.31.1',
 	defip => $defip,
 	defmask => $defmask,
 	defgw => $defgw,
@@ -34,7 +34,7 @@ my %switch = (
 	defpass => $defpass,
 	mgmtvlan => '100',
 	realvlan => '101',
-	realgw => '10.20.101.1',
+	realgw => '10.20.32.1',
 	realmask => '255.255.255.0',
 	);
 
@@ -59,6 +59,8 @@ sub prov
 
 	print "Connecting to core $switch{core}\n";
 
+
+	# FIXME: can probably remove _log after finishing...
 	my $ios = Net::Telnet::Cisco->new (
 		Host => $switch{core},
 		Errmode => 'return',
@@ -77,13 +79,14 @@ sub prov
 	
 	$ios->login ($switch{iosuser}, $switch{iospass}) or die ("Login failed on core $switch{core}");
 
+	# With priv 15 we're already in enabled mode.. but just in case. (if using tacacs, the default setting puts you into unprivileged mode...)
 	$ios->enable;
 
 	# Smart to check somewhere on the way...
 	print $ios->errmsg;
 
 
-	# This does it easier... Alfa
+	# This does it easier... -- Mathias
 	$ios->cmd ("term length 0");
 
 	print "Configuring $switch{core} $switch{interface}\n";
@@ -141,6 +144,9 @@ sub prov
 	#$new->cmd ("telnet $switch{defip} /source-interface $switch{interface}");
 	$new->print ("telnet $switch{defip}");
 
+	# FIXME: this telnet-in-telnet needs some errorchecking... if it fails, we actually try to run the following commands on the core gw instead of on the stupid switch
+	#        the commands I've used doesn't do any harm, as they fail on "conf" instead of "conf t" but it's not pretty!  -- Mathias
+
 
 	# Okay... now we got a connection to the switch...
 	# The linksys telnet interface is a menu(!), but we can exit that after logging in.
@@ -154,6 +160,9 @@ sub prov
 	# Default for new linksys firmware is to login after admin\n
 	#$new->print ("$switch{defpass}\n");
 
+
+	# This is... ctrl+z !
+	# Exits from the menu to an "cli" from which we enter "lcli"...
 	$new->print ("\cZ");
 
 	print "Waiting for basic cli...\n";
