@@ -19,7 +19,6 @@ my $tftpserver = '10.20.4.11';
 my $iosuser = 'pms';
 my $iospass = 'Polar11';
 
-
 # This is per switch settings!
 my %switch = (
 	name => 'rad1',
@@ -33,6 +32,10 @@ my %switch = (
 	iospass => $iospass,
 	defuser => $defuser,
 	defpass => $defpass,
+	mgmtvlan => '100',
+	realvlan => '101',
+	realgw => '10.20.101.1',
+	realmask => '255.255.255.0',
 	);
 
 
@@ -196,21 +199,103 @@ sub prov
 	$new->print ("exit");
 
 	print "Copying config for $switch{name} from $switch{tftpserver}...\n";
-	$new->cmd ("copy tftp://$switch{tftpserver}/base/$switch{name}.conf startup-config");
+	$new->print ("copy tftp://$switch{tftpserver}/base/$switch{name}.conf startup-config\n\n");
 
-	print $new->last_prompt;
+#	print $new->last_prompt;
 
-	$new->waitfor ('/hh:mm:ss/');
+#	$new->waitfor ('/hh:mm:ss/');
 
+	print "10..\n";
+	sleep (1);
+	print "9..\n";
+	sleep (1);
+	print "8..\n";
+	sleep (1);
+	print "7..\n";
+	sleep (1);
+	print "6..\n";
+	sleep (1);
+	print "5..\n";
+	sleep (1);
+	print "4..\n";
+	sleep (1);
+	print "3..\n";
+	sleep (1);
+	print "2..\n";
+	sleep (1);
+	print "1..\n";
+	sleep (1);
+	$new->cmd ("\n");
 	print "Reloading $switch{name}...\n";
 	$new->cmd ("reload");
+	$new->cmd ("reload");
+	$new->cmd ("reload");
+	sleep 1;
 	print "Replying 'y'..\n";
-	$new->print ("y\n");
+	$new->cmd ("y");
 
 
 	$new->errmsg;
 	$new->close ();
+
+	print "Connecting to core $switch{core}\n";
+
+	undef $ios;
+	$ios = Net::Telnet::Cisco->new (
+		Host => $switch{core},
+		Errmode => 'return',
+		output_log => "out-core$switch{core}.log", 
+		input_log => "in-core$switch{core}.log", 
+		Prompt => '/\S+[#>]/',
+		);
 	
+	if (!defined ($ios))
+	{
+		print "Could not connect to core $switch{core}\n";
+		return 0;
+	}
+
+	print "Connected to core $switch{core}... Logging in.\n";
+	
+	$ios->login ($switch{iosuser}, $switch{iospass}) or die ("Login failed on core $switch{core}");
+
+	$ios->enable;
+
+	# Smart to check somewhere on the way...
+	print $ios->errmsg;
+
+
+	# This does it easier... Alfa
+	$ios->cmd ("term length 0");
+
+	print "Configuring $switch{core} $switch{interface}\n";
+
+	$ios->cmd ("conf t");
+	$ios->cmd ("default int $switch{interface}");
+	$ios->cmd ("int $switch{interface}");
+	$ios->cmd ("no shut");
+	$ios->cmd ("description $switch{name}");
+	$ios->cmd ("switchport trunk encap dot1q");
+	$ios->cmd ("switchport mode trunk");
+	$ios->cmd ("switchport trunk allowed vlan $switch{realvlan},$switch{mgmtvlan}");
+	$ios->cmd ("exit");
+	$ios->cmd ("no int vlan $switch{realvlan}");
+	$ios->cmd ("int vlan $switch{realvlan}");
+	$ios->cmd ("ip address $switch{realgw} $switch{realmask}");
+	$ios->cmd ("exit");
+
+
+## FIXME: more config here!
+
+	$ios->cmd ("end");
+
+	# Smart to check somewhere on the way...
+	print $ios->errmsg;
+
+
+	# Closing the connection for now.
+	$ios->close;
+
 }
 
 
