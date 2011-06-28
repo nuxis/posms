@@ -241,6 +241,8 @@ sub prov
 	$ios->cmd ("switchport mode trunk");
 	$ios->cmd ("switchport trunk allowed vlan $switch{realvlan},$switch{mgmtvlan}");
 	$ios->cmd ("exit");
+	$ios->cmd ("vlan $switch{realvlan}");
+	$ios->cmd ("exit");
 	$ios->cmd ("no int vlan $switch{realvlan}");
 	$ios->cmd ("int vlan $switch{realvlan}");
 	$ios->cmd ("ip address $switch{realgw} $switch{realmask}");
