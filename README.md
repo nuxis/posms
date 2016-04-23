@@ -1,4 +1,16 @@
 
+# posmos
+
+'piece of shit' management system.
+
+Renamed to be less confusing, since there are a lot of systems named PMS in the Polar Party-sphere.
+
+This project is no longer maintained and is kept here for historical reasons only. No warranties :-)
+
+
+
+# Original README
+
 pms is short for ... management system.
 
 It's used for Polar Party (www.polarparty.no), but it could mean whatever you want.
